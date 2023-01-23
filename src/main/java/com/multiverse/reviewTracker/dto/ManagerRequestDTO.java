@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,7 +16,7 @@ public class ManagerRequestDTO {
     private String lastName;
     private String email;
     private String password;
-    private ArrayList<Engineer> subordinates;
+    private List<Engineer> engineers;
 
     public ManagerRequestDTO(Long id, String firstName, String lastName, String email, String password) {
         this.id = id;
@@ -23,5 +24,6 @@ public class ManagerRequestDTO {
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.engineers = new ArrayList<>();
     }
 }

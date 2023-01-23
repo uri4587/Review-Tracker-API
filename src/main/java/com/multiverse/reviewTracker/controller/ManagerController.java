@@ -35,9 +35,9 @@ public class ManagerController {
         return new ResponseEntity<>(managerResponseDTOS, HttpStatus.OK);
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public ResponseEntity<ManagerResponseDTO> getManagerById(@PathVariable("id") Long id){
-        Manager manager = managerService.getEngineer(id);
+        Manager manager = managerService.getManager(id);
         ManagerResponseDTO managerResponseDTO = new ManagerResponseDTO(manager);
         return new ResponseEntity<>(managerResponseDTO, HttpStatus.OK);
     }
@@ -49,12 +49,22 @@ public class ManagerController {
                 managerRequestDTO.getLastName(),
                 managerRequestDTO.getEmail(),
                 managerRequestDTO.getPassword()
+
         );
         ManagerResponseDTO managerResponseDTO = new ManagerResponseDTO(manager);
         return new ResponseEntity<>(managerResponseDTO, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/id")
+    @PostMapping("/manager/{managerId}/engineer/{engineerId}")
+    public ResponseEntity<Void> createManagerEngineerJoin(
+            @PathVariable Long managerId,
+            @PathVariable Long engineerId ) {
+        managerService.createManagerEngineerJoin(managerId, engineerId);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+
+    }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<ManagerResponseDTO> deleteManager(@PathVariable Long id){
         Manager manager = managerService.getManager(id);
         managerService.deleteManager(id);
@@ -62,7 +72,7 @@ public class ManagerController {
         return new ResponseEntity<>(managerResponseDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/id")
+    @PutMapping("/{id}")
     public ResponseEntity<ManagerResponseDTO> updateManager(@PathVariable Long id, @RequestBody ManagerRequestDTO managerRequestDTO) {
         Manager updatedManager = managerService.updateManager(id, managerRequestDTO);
         ManagerResponseDTO managerResponseDTO = new ManagerResponseDTO(updatedManager);

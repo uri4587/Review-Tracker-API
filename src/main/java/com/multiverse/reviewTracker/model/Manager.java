@@ -1,17 +1,34 @@
 package com.multiverse.reviewTracker.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
+import java.util.List;
 
+@Entity
+@Table(name = "manager")
+@Getter
 @Setter
-@DiscriminatorValue("manager")
+@ToString
 public class Manager extends User {
-    @Column(name ="subordinates", nullable = true)
-    public ArrayList<Engineer> subordinates;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "manager_engineer",
+            joinColumns = @JoinColumn(name = "manager_id"),
+            inverseJoinColumns = @JoinColumn(name = "engineer_id"))
+
+    public List<Engineer> engineers = new ArrayList<>();
+
+    public Manager() {
+        this.engineers = new ArrayList<>();
+    }
+
+
 }

@@ -31,7 +31,7 @@ public class EngineerController {
         return new ResponseEntity<>(engineerResponseDTOS, HttpStatus.OK);
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public ResponseEntity<EngineerResponseDTO> getEngineerById(@PathVariable("id") Long id){
         Engineer engineer = engineerService.getEngineer(id);
         EngineerResponseDTO engineerResponseDTO = new EngineerResponseDTO(engineer);
@@ -50,7 +50,7 @@ public class EngineerController {
         return new ResponseEntity<>(engineerResponseDTO, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public ResponseEntity<EngineerResponseDTO> deleteEngineer(@PathVariable Long id){
         Engineer engineer = engineerService.getEngineer(id);
         engineerService.deleteEngineer(id);
@@ -58,7 +58,7 @@ public class EngineerController {
         return new ResponseEntity<>(engineerResponseDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/id")
+    @PutMapping("/{id}")
     public ResponseEntity<EngineerResponseDTO> updateEngineer(@PathVariable Long id, @RequestBody EngineerRequestDTO engineerRequestDTO) {
         Engineer updatedEngineer = engineerService.updateEngineer(id, engineerRequestDTO);
         EngineerResponseDTO engineerResponseDTO = new EngineerResponseDTO(updatedEngineer);

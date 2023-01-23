@@ -55,6 +55,11 @@ public class EngineerService {
     }
 
     @Transactional
+    public void deleteAll(){
+        engineerRepository.deleteAll();
+    }
+
+    @Transactional
     public Engineer updateEngineer(Long id, EngineerRequestDTO engineerRequestDTO) {
             Engineer engineer = engineerRepository.findById(id)
                     .orElseThrow(() ->

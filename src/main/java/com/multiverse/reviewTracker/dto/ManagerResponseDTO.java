@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,7 +16,7 @@ public class ManagerResponseDTO {
     private String lastName;
     private String email;
     private String password;
-    private ArrayList<Engineer> subordinates;
+    private List<Engineer> engineers;
 
     public ManagerResponseDTO(Manager manager) {
         this.id = manager.getId();
@@ -23,6 +24,7 @@ public class ManagerResponseDTO {
         this.lastName = manager.getLastName();
         this.email = manager.getEmail();
         this.password = manager.getPassword();
+        this.engineers = new ArrayList<>();
     }
 
 }
