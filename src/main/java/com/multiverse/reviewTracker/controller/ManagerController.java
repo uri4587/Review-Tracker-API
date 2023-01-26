@@ -60,10 +60,10 @@ public class ManagerController {
     public ResponseEntity<String> createManagerEngineerJoin(
             @PathVariable Long managerId,
             @PathVariable Long engineerId ) {
-        Manager manager = managerService.getManager(managerId);
-        Engineer engineer = engineerService.getEngineer(engineerId);
-        manager.getEngineers().add(engineer);
-        engineer.getManagers().add(manager);
+//        Manager manager = managerService.getManager(managerId);
+//        Engineer engineer = engineerService.getEngineer(engineerId);
+//        manager.getEngineers().add(engineer);
+//        engineer.getManagers().add(manager);
         managerService.createManagerEngineerJoin(managerId, engineerId);
         return new ResponseEntity<>("Engineer and Manager successfully joined", HttpStatus.CREATED);
 
