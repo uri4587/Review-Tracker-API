@@ -8,6 +8,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @MappedSuperclass
+@ToString
 public abstract class User {
 
 

@@ -3,32 +3,34 @@ package com.multiverse.reviewTracker.controller;
 import com.multiverse.reviewTracker.dto.EngineerRequestDTO;
 import com.multiverse.reviewTracker.dto.EngineerResponseDTO;
 import com.multiverse.reviewTracker.model.Engineer;
+import com.multiverse.reviewTracker.model.Manager;
 import com.multiverse.reviewTracker.service.EngineerService;
+import com.multiverse.reviewTracker.service.ManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/engineers")
 public class EngineerController {
     private final EngineerService engineerService;
+    private final ManagerService managerService;
 
     @Autowired
-    public EngineerController(EngineerService engineerService) {
+    public EngineerController(EngineerService engineerService, ManagerService managerService) {
         this.engineerService = engineerService;
+        this.managerService = managerService;
     }
 
     @GetMapping()
     public ResponseEntity<List<EngineerResponseDTO>> getEngineers() {
-        List<Engineer> engineers = engineerService.getEngineers();
-        List<EngineerResponseDTO> engineerResponseDTOS = engineers.stream()
-                .map(engineer -> new EngineerResponseDTO(engineer))
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(engineerResponseDTOS, HttpStatus.OK);
+
+        List<EngineerResponseDTO> engineers = engineerService.getEngineers();
+
+        return new ResponseEntity<>(engineers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -63,6 +65,19 @@ public class EngineerController {
         Engineer updatedEngineer = engineerService.updateEngineer(id, engineerRequestDTO);
         EngineerResponseDTO engineerResponseDTO = new EngineerResponseDTO(updatedEngineer);
         return new ResponseEntity<>(engineerResponseDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/manager/{managerId}/engineer/{engineerId}")
+    public ResponseEntity<Void> createManagerEngineerJoin(
+            @PathVariable Long managerId,
+            @PathVariable Long engineerId ) {
+        Manager manager = managerService.getManager(managerId);
+        Engineer engineer = engineerService.getEngineer(engineerId);
+        manager.getEngineers().add(engineer);
+        engineer.getManagers().add(manager);
+        managerService.createManagerEngineerJoin(managerId, engineerId);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+
     }
 
 }

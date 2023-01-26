@@ -6,7 +6,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -16,7 +19,8 @@ public class EngineerResponseDTO {
     private String lastName;
     private String email;
     private String password;
-    private List<Manager> managers;
+//    private List<ManagerResponseDTO> managers;
+    private List<ManagerInfoDTO> managers;
 
     public EngineerResponseDTO(Engineer engineer) {
         this.id = engineer.getId();
@@ -25,5 +29,9 @@ public class EngineerResponseDTO {
         this.email = engineer.getEmail();
         this.password = engineer.getPassword();
         this.managers = new ArrayList<>();
+        for(Manager manager : engineer.getManagers()) {
+            this.managers.add(new ManagerInfoDTO(manager));
+        }
     }
+
 }

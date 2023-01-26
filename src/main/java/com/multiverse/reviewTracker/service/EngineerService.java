@@ -1,16 +1,19 @@
 package com.multiverse.reviewTracker.service;
 
 import com.multiverse.reviewTracker.dto.EngineerRequestDTO;
+import com.multiverse.reviewTracker.dto.EngineerResponseDTO;
 import com.multiverse.reviewTracker.exception.ResourceNotFoundException;
 import com.multiverse.reviewTracker.model.Engineer;
 
+import com.multiverse.reviewTracker.model.Manager;
 import com.multiverse.reviewTracker.repository.EngineerRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EngineerService {
@@ -19,13 +22,23 @@ public class EngineerService {
     public EngineerService(EngineerRepository engineerRepository) {
         this.engineerRepository = engineerRepository;
     }
-
-    public List<Engineer> getEngineers() {
-        return engineerRepository.findAll();
+    @Transactional
+    public List<EngineerResponseDTO> getEngineers() {
+        return engineerRepository.findAll().stream()
+                .map(EngineerResponseDTO::new)
+                .collect(Collectors.toList());
     }
-
+    @Transactional
     public Engineer getEngineer(Long id) {
-        return engineerRepository.findById(id).orElseThrow();
+        return engineerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Engineer not found"));
+    }
+    @Transactional
+    public String getEngineerManagers(Long id) {
+        Engineer engineer = engineerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Engineer not found"));
+
+        return engineer.getManagers().toString();
     }
 
     @Transactional
@@ -48,6 +61,14 @@ public class EngineerService {
            Engineer engineer = engineerRepository.findById(id).orElseThrow(() ->
            new ResourceNotFoundException("Engineer not found with id: " + id));
 
+           //remove the join between and engineer and manager entities
+        List<Manager> managers = engineer.getManagers();
+        for(Manager manager: managers) {
+            manager.getEngineers().remove(engineer);
+        }
+        engineer.setManagers(new ArrayList<>());
+
+        //delete engineer instance
            engineerRepository.delete(engineer);
            return engineer;
 

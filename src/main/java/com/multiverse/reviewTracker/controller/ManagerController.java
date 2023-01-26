@@ -1,11 +1,10 @@
 package com.multiverse.reviewTracker.controller;
 
-import com.multiverse.reviewTracker.dto.EngineerRequestDTO;
-import com.multiverse.reviewTracker.dto.EngineerResponseDTO;
 import com.multiverse.reviewTracker.dto.ManagerRequestDTO;
 import com.multiverse.reviewTracker.dto.ManagerResponseDTO;
 import com.multiverse.reviewTracker.model.Engineer;
 import com.multiverse.reviewTracker.model.Manager;
+import com.multiverse.reviewTracker.repository.EngineerRepository;
 import com.multiverse.reviewTracker.service.EngineerService;
 import com.multiverse.reviewTracker.service.ManagerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,25 +13,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/managers")
 public class ManagerController {
     private final ManagerService managerService;
+    private final EngineerService engineerService;
+
 
     @Autowired
-    public ManagerController(ManagerService managerService) {
+    public ManagerController(ManagerService managerService,
+                             EngineerService engineerService, EngineerRepository engineerRepository) {
         this.managerService = managerService;
+        this.engineerService = engineerService;
+
     }
 
     @GetMapping()
     public ResponseEntity<List<ManagerResponseDTO>> getManagers() {
-        List<Manager> managers = managerService.getManagers();
-        List<ManagerResponseDTO> managerResponseDTOS = managers.stream()
-                .map(manager -> new ManagerResponseDTO(manager))
-                .collect(Collectors.toList());
-        return new ResponseEntity<>(managerResponseDTOS, HttpStatus.OK);
+        List<ManagerResponseDTO> managers = managerService.getManagers();
+
+        return new ResponseEntity<>(managers, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -59,6 +60,10 @@ public class ManagerController {
     public ResponseEntity<Void> createManagerEngineerJoin(
             @PathVariable Long managerId,
             @PathVariable Long engineerId ) {
+        Manager manager = managerService.getManager(managerId);
+        Engineer engineer = engineerService.getEngineer(engineerId);
+        manager.getEngineers().add(engineer);
+        engineer.getManagers().add(manager);
         managerService.createManagerEngineerJoin(managerId, engineerId);
         return new ResponseEntity<>(HttpStatus.CREATED);
 

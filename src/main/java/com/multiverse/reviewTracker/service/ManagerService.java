@@ -1,6 +1,7 @@
 package com.multiverse.reviewTracker.service;
 
 import com.multiverse.reviewTracker.dto.ManagerRequestDTO;
+import com.multiverse.reviewTracker.dto.ManagerResponseDTO;
 import com.multiverse.reviewTracker.exception.ResourceNotFoundException;
 import com.multiverse.reviewTracker.model.Engineer;
 import com.multiverse.reviewTracker.model.Manager;
@@ -9,11 +10,16 @@ import com.multiverse.reviewTracker.repository.ManagerRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.apache.catalina.Engine;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class ManagerService {
 
@@ -29,11 +35,15 @@ public class ManagerService {
     }
 
 //    Get All Managers Method
-    public List<Manager> getManagers() {
-        return managerRepository.findAll();
+    @Transactional
+    public List<ManagerResponseDTO> getManagers() {
+        return managerRepository.findAll().stream()
+                .map(ManagerResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
 //    Get Manager by id Method
+    @Transactional
     public Manager getManager(Long id) {
         return managerRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Manager not found with id: " + id));
@@ -58,7 +68,14 @@ public class ManagerService {
     public Manager deleteManager(Long id) {
         Manager manager = managerRepository.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Manager not found with id: " + id));
+        //remove join between engineer and manager entities
+        List<Engineer> engineers = manager.getEngineers();
+        for (Engineer engineer: engineers) {
+            engineer.getManagers().remove(manager);
+        }
+        manager.setEngineers(new ArrayList<>());
 
+        // delete manager instance
         managerRepository.delete(manager);
         return manager;
     }
@@ -69,7 +86,7 @@ public class ManagerService {
         managerRepository.deleteAll();
     }
 
-//    Update Manager Method
+//Update Manager Method
     @Transactional
     public Manager updateManager(Long id, ManagerRequestDTO managerRequestDTO) {
         Manager manager = managerRepository.findById(id)
@@ -83,7 +100,7 @@ public class ManagerService {
         return managerRepository.save(manager);
     }
 
-//    Create a JOIN instance for Engineer and Manager(Exclusive to only Managers)
+//Create a JOIN instance for Engineer and Manager(Exclusive to only Managers)
     @Transactional
     public void createManagerEngineerJoin(Long managerId, Long engineerId) {
         Manager manager = managerRepository.findById(managerId)
@@ -98,8 +115,18 @@ public class ManagerService {
         engineerRepository.save(engineer);
     }
 
-//    Delete a Join between Manager and Engineer(Exclusive to Only Managers)
-    @Transactional void deleteManagerEngineerJoin(Long managerId, Long engineerId) {
+    @Transactional
+    public String getManagerEngineers(Long managerId) {
+        Manager manager = managerRepository.findById(managerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Manager not found"));
+
+        return manager.getEngineers().toString();
+
+    }
+
+//Delete a Join between Manager and Engineer(Exclusive to Only Managers)
+    @Transactional
+    public void deleteManagerEngineerJoin(Long managerId, Long engineerId) {
         Manager manager = managerRepository.findById(managerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Manager not found"));
         Engineer engineer = engineerRepository.findById(engineerId)
