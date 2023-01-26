@@ -37,7 +37,7 @@ so that their progress can be tracked over time.
 Below is a diagram display the Data Model of this project.
 
 
-![data model example](images/Review Tracker.png)
+![data model example](https://github.com/uri4587/Review-Tracker-API/blob/main/images/Review%20Tracker.png)
 
 Above is displayed the relationships between my models.
 

@@ -19,7 +19,7 @@ public class FeedbackResponseDTO {
     private Long engineerId;
     private Long managerId;
 
-    private List checkpoints;
+//    private List checkpoints;
 
     public FeedbackResponseDTO(Feedback feedback) {
         this.id = feedback.getId();
@@ -28,7 +28,7 @@ public class FeedbackResponseDTO {
         this.managerId = feedback.getManager().getId();
         this.createdAt = feedback.getCreatedAt();
         this.updatedAt = feedback.getUpdatedAt();
-//        this.checkpoints = new ArrayList<>();
+//        this.checkpoints = feedback.getCheckpoints();
 //        for(Checkpoint checkpoint : feedback.getCheckpoints()) {
 //            this.checkpoints.add(new CheckpointResponseDTO(checkpoint));
 //        }

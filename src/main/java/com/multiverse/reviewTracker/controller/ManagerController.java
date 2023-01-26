@@ -57,7 +57,7 @@ public class ManagerController {
     }
 
     @PostMapping("/manager/{managerId}/engineer/{engineerId}")
-    public ResponseEntity<Void> createManagerEngineerJoin(
+    public ResponseEntity<String> createManagerEngineerJoin(
             @PathVariable Long managerId,
             @PathVariable Long engineerId ) {
         Manager manager = managerService.getManager(managerId);
@@ -65,7 +65,7 @@ public class ManagerController {
         manager.getEngineers().add(engineer);
         engineer.getManagers().add(manager);
         managerService.createManagerEngineerJoin(managerId, engineerId);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>("Engineer and Manager successfully joined", HttpStatus.CREATED);
 
     }
 
